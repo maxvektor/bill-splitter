@@ -22,14 +22,6 @@ describe("makeTransaction splits sum on trnsactions", () => {
 
 describe("billSplitter", () => {
   test("is a function", () => {
-    /*
-      Оля дала 1000 рублей
-      Катя дала 300 рублей
-      Вова дал 1500 рублей
-
-      Сыграли Катя, Вова и Оля игру за 900 рублей // О: 700, К: 0, В: 1200
-      Сыграли Катя , Вова и левый чувак игру за 600 р // О: 700, К: -200 , В: 1000
-  */
     expect(typeof billSplitter).toBe("function");
   });
 
@@ -61,4 +53,10 @@ describe("billSplitter", () => {
 
     expect(result).toEqual([{ id: "1", amount: 5 }, { id: "2", amount: 7 }]);
   });
+});
+
+describe("billSplitter and makeTransaction are work together", () => {
+ test('happy path',()=>{
+   
+ })
 });

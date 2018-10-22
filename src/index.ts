@@ -51,4 +51,17 @@ export const makeTransaction = (
   }));
 };
 
+export const makeNegativeTransaction = (
+  sum: number,
+  ids: Id[],
+  devider?: number
+): Transaction[] => {
+  const amount = sum / (devider || ids.length);
+
+  return ids.map(id => ({
+    id,
+    amount: -amount
+  }));
+};
+
 export default getTotalPerId;

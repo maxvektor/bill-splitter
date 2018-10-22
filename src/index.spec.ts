@@ -1,7 +1,7 @@
-import billSplitter, { makeTransaction } from "./";
+import billSplitter, { makeTransaction, makeNegativeTransaction } from ".";
 
-describe("makeTransaction splits sum on trnsactions", () => {
-  describe("splits sum on trnsactions", () => {
+describe("makeTransaction", () => {
+  describe("splits sum on trasactions", () => {
     test("with given ids", () => {
       expect(makeTransaction(12, ["1", "2", "4"])).toEqual([
         { id: "1", amount: 4 },
@@ -15,6 +15,26 @@ describe("makeTransaction splits sum on trnsactions", () => {
         { id: "1", amount: 2 },
         { id: "2", amount: 2 },
         { id: "4", amount: 2 }
+      ]);
+    });
+  });
+});
+
+describe("makeNegativeTransaction", () => {
+  describe("splits sum on trasactions and returns negative amount per id", () => {
+    test("with given ids", () => {
+      expect(makeNegativeTransaction(12, ["1", "2", "4"])).toEqual([
+        { id: "1", amount: -4 },
+        { id: "2", amount: -4 },
+        { id: "4", amount: -4 }
+      ]);
+    });
+
+    test("with given ids and devider", () => {
+      expect(makeNegativeTransaction(12, ["1", "2", "4"], 6)).toEqual([
+        { id: "1", amount: -2 },
+        { id: "2", amount: -2 },
+        { id: "4", amount: -2 }
       ]);
     });
   });
@@ -53,10 +73,4 @@ describe("billSplitter", () => {
 
     expect(result).toEqual([{ id: "1", amount: 5 }, { id: "2", amount: 7 }]);
   });
-});
-
-describe("billSplitter and makeTransaction are work together", () => {
- test('happy path',()=>{
-   
- })
 });

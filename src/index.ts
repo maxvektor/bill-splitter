@@ -1,11 +1,11 @@
 type Id = string;
 
-type Transaction = {
+export type Transaction = {
   id: Id;
   amount: number;
 };
 
-type SplitResult = {
+export type SplitResult = {
   id: Id;
   amount: number;
 };
@@ -15,7 +15,7 @@ type TotalObj = {
 };
 
 const filterIfIds = (transactions: Transaction[], ids?: Id[]) =>
-  ids ? transactions.filter(t => t.id in ids) : transactions;
+  ids ? transactions.filter(t => ids.includes(t.id)) : transactions;
 
 const transactionsReducer = (totalObj: TotalObj, transaction: Transaction) => {
   const { id, amount } = transaction;

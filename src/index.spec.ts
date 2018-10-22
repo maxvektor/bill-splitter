@@ -1,4 +1,9 @@
-import billSplitter, { makeTransaction, makeNegativeTransaction } from ".";
+import billSplitter, {
+  makeTransaction,
+  makeNegativeTransaction,
+  Transaction,
+  SplitResult
+} from ".";
 
 describe("makeTransaction", () => {
   describe("splits sum on trasactions", () => {
@@ -72,5 +77,79 @@ describe("billSplitter", () => {
     ]);
 
     expect(result).toEqual([{ id: "1", amount: 5 }, { id: "2", amount: 7 }]);
+  });
+});
+
+describe("All functions scenario", () => {
+  test("happy path", () => {
+    const transactions: Transaction[] = [];
+    /**
+     * Alice Bob and Charley are splittiong bills.
+     * They took a credit card and puted some moey on it.
+     * A: $1000, B: $200, C: $700
+     */
+    const afterPayment: Transaction[] = [
+      ...transactions,
+      { id: "Alice", amount: 1000 },
+      { id: "Bob", amount: 200 },
+      { id: "Charley", amount: 700 }
+    ];
+
+    expect(billSplitter(afterPayment)).toEqual([
+      { id: "Alice", amount: 1000 },
+      { id: "Bob", amount: 200 },
+      { id: "Charley", amount: 700 }
+    ]);
+    /**
+     * At the first restaurant Alice spend $200, Bob - $50 and Charley - $200
+     */
+    const afterFirstPlace: Transaction[] = [
+      ...afterPayment,
+      { id: "Alice", amount: -200 },
+      { id: "Bob", amount: -50 },
+      { id: "Charley", amount: -200 }
+    ];
+
+    expect(billSplitter(afterFirstPlace)).toEqual([
+      { id: "Alice", amount: 800 },
+      { id: "Bob", amount: 150 },
+      { id: "Charley", amount: 500 }
+    ]);
+
+    /**
+     * Alice Bob and Charley came with Eva.
+     * At the second restaurant bill was $1600. ABC decided to split it equally, Eva payd for her part in cash.
+     */
+    const afterSecond = [
+      ...afterFirstPlace,
+      ...makeNegativeTransaction(1600, ["Alice", "Bob", "Charley"], 4)
+    ];
+
+    expect(billSplitter(afterSecond)).toEqual([
+      { id: "Alice", amount: 400 },
+      { id: "Bob", amount: -250 },
+      { id: "Charley", amount: 100 }
+    ]);
+
+    /**
+     * Charley puted another $1000 on a credit card. This is for him and Bob
+     */
+    const afterSecondPayment = [
+      ...afterSecond,
+      ...makeTransaction(1000, ["Charley", "Bob"])
+    ];
+
+    expect(billSplitter(afterSecondPayment)).toEqual([
+      { id: "Alice", amount: 400 },
+      { id: "Bob", amount: 250 },
+      { id: "Charley", amount: 600 }
+    ]);
+
+    /**
+     * How match Alices money is there on card?
+     */
+    expect(billSplitter(afterSecondPayment,["Alice"])).toEqual([
+      { id: "Alice", amount: 400 }
+    ]);
   });
 });

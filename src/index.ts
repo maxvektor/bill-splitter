@@ -38,12 +38,13 @@ const reduceTransactions = (transactions: Transaction[]): SplitResult[] =>
 const getTotalPerId = (transactions: Transaction[], ids?: Id[]) =>
   reduceTransactions(filterIfIds(transactions, ids));
 
-export const makeTransaction = (
+const createMakeTransaction = (isNegative:boolean = false) => (
   sum: number,
   ids: Id[],
   devider?: number
 ): Transaction[] => {
-  const amount = sum / (devider || ids.length);
+  const multiplier = isNegative ? -1 : 1;
+  const amount = sum / (devider || ids.length) * multiplier;
 
   return ids.map(id => ({
     id,
@@ -51,17 +52,8 @@ export const makeTransaction = (
   }));
 };
 
-export const makeNegativeTransaction = (
-  sum: number,
-  ids: Id[],
-  devider?: number
-): Transaction[] => {
-  const amount = sum / (devider || ids.length);
+export const makeTransaction = createMakeTransaction();
 
-  return ids.map(id => ({
-    id,
-    amount: -amount
-  }));
-};
+export const makeNegativeTransaction = createMakeTransaction(true)
 
 export default getTotalPerId;

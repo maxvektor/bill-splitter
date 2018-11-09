@@ -1,7 +1,8 @@
-import billSplitter, {
+import splitBill, {
   makeTransaction,
   makeNegativeTransaction,
   Transaction,
+  getTotalPerId,
   SplitResult
 } from ".";
 
@@ -45,13 +46,13 @@ describe("makeNegativeTransaction", () => {
   });
 });
 
-describe("billSplitter", () => {
+describe("getTotalPerId", () => {
   test("is a function", () => {
-    expect(typeof billSplitter).toBe("function");
+    expect(typeof getTotalPerId).toBe("function");
   });
 
   test("calculates sum for one id", () => {
-    const result = billSplitter([
+    const result = getTotalPerId([
       { id: "1", amount: 3 },
       { id: "1", amount: 5 }
     ]);
@@ -60,7 +61,7 @@ describe("billSplitter", () => {
   });
 
   test("calculates sum for several ids", () => {
-    const result = billSplitter([
+    const result = getTotalPerId([
       { id: "1", amount: 3 },
       { id: "1", amount: 2 },
       { id: "2", amount: 7 }
@@ -70,7 +71,7 @@ describe("billSplitter", () => {
   });
 
   test("calculates sum for negative numbers", () => {
-    const result = billSplitter([
+    const result = getTotalPerId([
       { id: "1", amount: 3 },
       { id: "1", amount: 2 },
       { id: "2", amount: 7 }
@@ -78,6 +79,32 @@ describe("billSplitter", () => {
 
     expect(result).toEqual([{ id: "1", amount: 5 }, { id: "2", amount: 7 }]);
   });
+});
+
+describe("splitBill", () => {
+  test("is a function", () => {
+    expect(typeof splitBill).toBe("function");
+  });
+
+  test("calculates sum for one id", () => {
+    const result = splitBill([
+      { id: "1", amount: 3 },
+      { id: "1", amount: 5 }
+    ]);
+
+    expect(result).toEqual([{ id: "1", amount: 0 }]);
+  });
+
+  test("calculates sum for several ids", () => {
+    const result = splitBill([
+      { id: "1", amount: 3 },
+      { id: "1", amount: 2 },
+      { id: "2", amount: 7 }
+    ]);
+
+    expect(result).toEqual([{ id: "1", amount: 1 }, { id: "2", amount: -1 }]);
+  });
+
 });
 
 describe("All functions scenario", () => {
@@ -95,7 +122,7 @@ describe("All functions scenario", () => {
       { id: "Charley", amount: 700 }
     ];
 
-    expect(billSplitter(afterPayment)).toEqual([
+    expect(getTotalPerId(afterPayment)).toEqual([
       { id: "Alice", amount: 1000 },
       { id: "Bob", amount: 200 },
       { id: "Charley", amount: 700 }
@@ -110,7 +137,7 @@ describe("All functions scenario", () => {
       { id: "Charley", amount: -200 }
     ];
 
-    expect(billSplitter(afterFirstPlace)).toEqual([
+    expect(getTotalPerId(afterFirstPlace)).toEqual([
       { id: "Alice", amount: 800 },
       { id: "Bob", amount: 150 },
       { id: "Charley", amount: 500 }
@@ -125,7 +152,7 @@ describe("All functions scenario", () => {
       ...makeNegativeTransaction(1600, ["Alice", "Bob", "Charley"], 4)
     ];
 
-    expect(billSplitter(afterSecond)).toEqual([
+    expect(getTotalPerId(afterSecond)).toEqual([
       { id: "Alice", amount: 400 },
       { id: "Bob", amount: -250 },
       { id: "Charley", amount: 100 }
@@ -139,7 +166,7 @@ describe("All functions scenario", () => {
       ...makeTransaction(1000, ["Charley", "Bob"])
     ];
 
-    expect(billSplitter(afterSecondPayment)).toEqual([
+    expect(getTotalPerId(afterSecondPayment)).toEqual([
       { id: "Alice", amount: 400 },
       { id: "Bob", amount: 250 },
       { id: "Charley", amount: 600 }
@@ -148,7 +175,7 @@ describe("All functions scenario", () => {
     /**
      * How match Alices money is there on card?
      */
-    expect(billSplitter(afterSecondPayment,["Alice"])).toEqual([
+    expect(getTotalPerId(afterSecondPayment, ["Alice"])).toEqual([
       { id: "Alice", amount: 400 }
     ]);
   });
